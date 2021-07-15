@@ -22,9 +22,9 @@ part of DiffMatchPatch;
  * Class representing one patch operation.
  */
 class Patch {
-  List<Diff> diffs;
-  int start1;
-  int start2;
+  List<Diff>? diffs;
+  int? start1;
+  int? start2;
   int length1 = 0;
   int length2 = 0;
 
@@ -46,20 +46,20 @@ class Patch {
     if (this.length1 == 0) {
       coords1 = '${this.start1},0';
     } else if (this.length1 == 1) {
-      coords1 = (this.start1 + 1).toString();
+      coords1 = (this.start1! + 1).toString();
     } else {
-      coords1 = '${this.start1 + 1},${this.length1}';
+      coords1 = '${this.start1! + 1},${this.length1}';
     }
     if (this.length2 == 0) {
       coords2 = '${this.start2},0';
     } else if (this.length2 == 1) {
-      coords2 = (this.start2 + 1).toString();
+      coords2 = (this.start2! + 1).toString();
     } else {
-      coords2 = '${this.start2 + 1},${this.length2}';
+      coords2 = '${this.start2! + 1},${this.length2}';
     }
     final text = new StringBuffer('@@ -$coords1 +$coords2 @@\n');
     // Escape the body of the patch with %xx notation.
-    for (Diff aDiff in this.diffs) {
+    for (Diff aDiff in this.diffs!) {
       switch (aDiff.operation) {
         case Operation.insert:
           text.write('+');
@@ -71,7 +71,7 @@ class Patch {
           text.write(' ');
           break;
       }
-      text.write(Uri.encodeFull(aDiff.text));
+      text.write(Uri.encodeFull(aDiff.text!));
       text.write('\n');
     }
     return text.toString().replaceAll('%20', ' ');
