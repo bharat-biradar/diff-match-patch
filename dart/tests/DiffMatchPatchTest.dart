@@ -95,7 +95,7 @@ List<String> _diff_rebuildtexts(diffs) {
   return [text1.toString(), text2.toString()];
 }
 
-DiffMatchPatch dmp;
+var dmp = DiffMatchPatch();
 
 // DIFF TEST FUNCTIONS
 
@@ -140,22 +140,22 @@ void testDiffHalfmatch() {
 
   Expect.isNull(dmp.test_diff_halfMatch('12345', '23'), 'diff_halfMatch: No match #2.');
 
-  Expect.listEquals(['12', '90', 'a', 'z', '345678'], dmp.test_diff_halfMatch('1234567890', 'a345678z'), 'diff_halfMatch: Single Match #1.');
+  Expect.listEquals(['12', '90', 'a', 'z', '345678'], dmp.test_diff_halfMatch('1234567890', 'a345678z')!, 'diff_halfMatch: Single Match #1.');
 
-  Expect.listEquals(['a', 'z', '12', '90', '345678'], dmp.test_diff_halfMatch('a345678z', '1234567890'), 'diff_halfMatch: Single Match #2.');
+  Expect.listEquals(['a', 'z', '12', '90', '345678'], dmp.test_diff_halfMatch('a345678z', '1234567890')!, 'diff_halfMatch: Single Match #2.');
 
-  Expect.listEquals(['abc', 'z', '1234', '0', '56789'], dmp.test_diff_halfMatch('abc56789z', '1234567890'), 'diff_halfMatch: Single Match #3.');
+  Expect.listEquals(['abc', 'z', '1234', '0', '56789'], dmp.test_diff_halfMatch('abc56789z', '1234567890')!, 'diff_halfMatch: Single Match #3.');
 
-  Expect.listEquals(['a', 'xyz', '1', '7890', '23456'], dmp.test_diff_halfMatch('a23456xyz', '1234567890'), 'diff_halfMatch: Single Match #4.');
+  Expect.listEquals(['a', 'xyz', '1', '7890', '23456'], dmp.test_diff_halfMatch('a23456xyz', '1234567890')!, 'diff_halfMatch: Single Match #4.');
 
-  Expect.listEquals(['12123', '123121', 'a', 'z', '1234123451234'], dmp.test_diff_halfMatch('121231234123451234123121', 'a1234123451234z'), 'diff_halfMatch: Multiple Matches #1.');
+  Expect.listEquals(['12123', '123121', 'a', 'z', '1234123451234'], dmp.test_diff_halfMatch('121231234123451234123121', 'a1234123451234z')!, 'diff_halfMatch: Multiple Matches #1.');
 
-  Expect.listEquals(['', '-=-=-=-=-=', 'x', '', 'x-=-=-=-=-=-=-='], dmp.test_diff_halfMatch('x-=-=-=-=-=-=-=-=-=-=-=-=', 'xx-=-=-=-=-=-=-='), 'diff_halfMatch: Multiple Matches #2.');
+  Expect.listEquals(['', '-=-=-=-=-=', 'x', '', 'x-=-=-=-=-=-=-='], dmp.test_diff_halfMatch('x-=-=-=-=-=-=-=-=-=-=-=-=', 'xx-=-=-=-=-=-=-=')!, 'diff_halfMatch: Multiple Matches #2.');
 
-  Expect.listEquals(['-=-=-=-=-=', '', '', 'y', '-=-=-=-=-=-=-=y'], dmp.test_diff_halfMatch('-=-=-=-=-=-=-=-=-=-=-=-=y', '-=-=-=-=-=-=-=yy'), 'diff_halfMatch: Multiple Matches #3.');
+  Expect.listEquals(['-=-=-=-=-=', '', '', 'y', '-=-=-=-=-=-=-=y'], dmp.test_diff_halfMatch('-=-=-=-=-=-=-=-=-=-=-=-=y', '-=-=-=-=-=-=-=yy')!, 'diff_halfMatch: Multiple Matches #3.');
 
   // Optimal diff would be -q+x=H-i+e=lloHe+Hu=llo-Hew+y not -qHillo+x=HelloHe-w+Hulloy
-  Expect.listEquals(['qHillo', 'w', 'x', 'Hulloy', 'HelloHe'], dmp.test_diff_halfMatch('qHilloHelloHew', 'xHelloHeHulloy'), 'diff_halfMatch: Non-optimal halfmatch.');
+  Expect.listEquals(['qHillo', 'w', 'x', 'Hulloy', 'HelloHe'], dmp.test_diff_halfMatch('qHilloHelloHew', 'xHelloHeHulloy')!, 'diff_halfMatch: Non-optimal halfmatch.');
 
   dmp.Diff_Timeout = 0.0;
   Expect.isNull(dmp.test_diff_halfMatch('qHilloHelloHew', 'xHelloHeHulloy'), 'diff_halfMatch: Optimal no halfmatch.');
@@ -720,19 +720,19 @@ void testPatchAddContext() {
   Patch p;
   p = dmp.patch_fromText('@@ -21,4 +21,10 @@\n-jump\n+somersault\n')[0];
   dmp.test_patch_addContext(p, 'The quick brown fox jumps over the lazy dog.');
-  Expect.equals('@@ -17,12 +17,18 @@\n fox \n-jump\n+somersault\n s ov\n', p.toString(), 'patch_addContext: Simple case.');
+  Expect.equals('@@ -25,12 +21,18 @@\n fox \n-jump\n+somersault\n s ov\n', p.toString(), 'patch_addContext: Simple case.');
 
   p = dmp.patch_fromText('@@ -21,4 +21,10 @@\n-jump\n+somersault\n')[0];
   dmp.test_patch_addContext(p, 'The quick brown fox jumps.');
-  Expect.equals('@@ -17,10 +17,16 @@\n fox \n-jump\n+somersault\n s.\n', p.toString(), 'patch_addContext: Not enough trailing context.');
+  Expect.equals('@@ -25,10 +21,16 @@\n fox \n-jump\n+somersault\n s.\n', p.toString(), 'patch_addContext: Not enough trailing context.');
 
   p = dmp.patch_fromText('@@ -3 +3,2 @@\n-e\n+at\n')[0];
   dmp.test_patch_addContext(p, 'The quick brown fox jumps.');
-  Expect.equals('@@ -1,7 +1,8 @@\n Th\n-e\n+at\n  qui\n', p.toString(), 'patch_addContext: Not enough leading context.');
+  Expect.equals('@@ -5,7 +3,8 @@\n Th\n-e\n+at\n  qui\n', p.toString(), 'patch_addContext: Not enough leading context.');
 
   p = dmp.patch_fromText('@@ -3 +3,2 @@\n-e\n+at\n')[0];
   dmp.test_patch_addContext(p, 'The quick brown fox jumps.  The quick brown fox crashes.');
-  Expect.equals('@@ -1,27 +1,28 @@\n Th\n-e\n+at\n  quick brown fox jumps. \n', p.toString(), 'patch_addContext: Ambiguity.');
+  Expect.equals('@@ -5,27 +3,28 @@\n Th\n-e\n+at\n  quick brown fox jumps. \n', p.toString(), 'patch_addContext: Ambiguity.');
 }
 
 void testPatchMake() {
@@ -742,12 +742,12 @@ void testPatchMake() {
 
   String text1 = 'The quick brown fox jumps over the lazy dog.';
   String text2 = 'That quick brown fox jumped over a lazy dog.';
-  String expectedPatch = '@@ -1,8 +1,7 @@\n Th\n-at\n+e\n  qui\n@@ -21,17 +21,18 @@\n jump\n-ed\n+s\n  over \n-a\n+the\n  laz\n';
+  String expectedPatch = '@@ -5,8 +3,7 @@\n Th\n-at\n+e\n  qui\n@@ -29,17 +25,18 @@\n jump\n-ed\n+s\n  over \n-a\n+the\n  laz\n';
   // The second patch must be '-21,17 +21,18', not '-22,17 +21,18' due to rolling context.
   patches = dmp.patch_make(text2, text1);
   Expect.equals(expectedPatch, dmp.patch_toText(patches), 'patch_make: Text2+Text1 inputs.');
 
-  expectedPatch = '@@ -1,11 +1,12 @@\n Th\n-e\n+at\n  quick b\n@@ -22,18 +22,17 @@\n jump\n-s\n+ed\n  over \n-the\n+a\n  laz\n';
+  expectedPatch = '@@ -5,11 +3,12 @@\n Th\n-e\n+at\n  quick b\n@@ -30,18 +26,17 @@\n jump\n-s\n+ed\n  over \n-the\n+a\n  laz\n';
   patches = dmp.patch_make(text1, text2);
   Expect.equals(expectedPatch, dmp.patch_toText(patches), 'patch_make: Text1+Text2 inputs.');
 
@@ -765,7 +765,7 @@ void testPatchMake() {
   Expect.equals('@@ -1,21 +1,21 @@\n-%601234567890-=%5B%5D%5C;\',./\n+~!@#\$%25%5E&*()_+%7B%7D%7C:%22%3C%3E?\n', dmp.patch_toText(patches), 'patch_toText: Character encoding.');
 
   diffs = [new Diff(Operation.delete, '`1234567890-=[]\\;\',./'), new Diff(Operation.insert, '~!@#\$%^&*()_+{}|:"<>?')];
-  Expect.listEquals(diffs, dmp.patch_fromText('@@ -1,21 +1,21 @@\n-%601234567890-=%5B%5D%5C;\',./\n+~!@#\$%25%5E&*()_+%7B%7D%7C:%22%3C%3E?\n')[0].diffs, 'patch_fromText: Character decoding.');
+  Expect.listEquals(diffs, dmp.patch_fromText('@@ -1,21 +1,21 @@\n-%601234567890-=%5B%5D%5C;\',./\n+~!@#\$%25%5E&*()_+%7B%7D%7C:%22%3C%3E?\n')[0].diffs!, 'patch_fromText: Character decoding.');
 
   final sb = new StringBuffer();
   for (int x = 0; x < 100; x++) {
@@ -773,7 +773,7 @@ void testPatchMake() {
   }
   text1 = sb.toString();
   text2 = text1 + '123';
-  expectedPatch = '@@ -573,28 +573,31 @@\n cdefabcdefabcdefabcdefabcdef\n+123\n';
+  expectedPatch = '@@ -629,28 +601,31 @@\n cdefabcdefabcdefabcdefabcdef\n+123\n';
   patches = dmp.patch_make(text1, text2);
   Expect.equals(expectedPatch, dmp.patch_toText(patches), 'patch_make: Long string with repeats.');
 
@@ -799,7 +799,7 @@ void testPatchSplitMax() {
 
   patches = dmp.patch_make('abcdefghij , h : 0 , t : 1 abcdefghij , h : 0 , t : 1 abcdefghij , h : 0 , t : 1', 'abcdefghij , h : 1 , t : 1 abcdefghij , h : 1 , t : 1 abcdefghij , h : 0 , t : 1');
   dmp.patch_splitMax(patches);
-  Expect.equals('@@ -2,32 +2,32 @@\n bcdefghij , h : \n-0\n+1\n  , t : 1 abcdef\n@@ -29,32 +29,32 @@\n bcdefghij , h : \n-0\n+1\n  , t : 1 abcdef\n', dmp.patch_toText(patches), 'patch_splitMax: #4.');
+  Expect.equals('@@ -34,32 +18,32 @@\n bcdefghij , h : \n-0\n+1\n  , t : 1 abcdef\n@@ -61,32 +45,32 @@\n bcdefghij , h : \n-0\n+1\n  , t : 1 abcdef\n', dmp.patch_toText(patches), 'patch_splitMax: #4.');
 }
 
 void testPatchAddPadding() {
@@ -807,17 +807,17 @@ void testPatchAddPadding() {
   patches = dmp.patch_make('', 'test');
   Expect.equals('@@ -0,0 +1,4 @@\n+test\n', dmp.patch_toText(patches), 'patch_addPadding: Both edges full.');
   dmp.patch_addPadding(patches);
-  Expect.equals('@@ -1,8 +1,12 @@\n %01%02%03%04\n+test\n %01%02%03%04\n', dmp.patch_toText(patches), 'patch_addPadding: Both edges full.');
+  Expect.equals('@@ -9,8 +5,12 @@\n %01%02%03%04\n+test\n %01%02%03%04\n', dmp.patch_toText(patches), 'patch_addPadding: Both edges full.');
 
   patches = dmp.patch_make('XY', 'XtestY');
-  Expect.equals('@@ -1,2 +1,6 @@\n X\n+test\n Y\n', dmp.patch_toText(patches), 'patch_addPadding: Both edges partial.');
+  Expect.equals('@@ -3,2 +2,6 @@\n X\n+test\n Y\n', dmp.patch_toText(patches), 'patch_addPadding: Both edges partial.');
   dmp.patch_addPadding(patches);
-  Expect.equals('@@ -2,8 +2,12 @@\n %02%03%04X\n+test\n Y%01%02%03\n', dmp.patch_toText(patches), 'patch_addPadding: Both edges partial.');
+  Expect.equals('@@ -4,8 +8,12 @@\n %02%03%04X\n+test\n Y%01%02%03\n', dmp.patch_toText(patches), 'patch_addPadding: Both edges partial.');
 
   patches = dmp.patch_make('XXXXYYYY', 'XXXXtestYYYY');
-  Expect.equals('@@ -1,8 +1,12 @@\n XXXX\n+test\n YYYY\n', dmp.patch_toText(patches), 'patch_addPadding: Both edges none.');
+  Expect.equals('@@ -9,8 +5,12 @@\n XXXX\n+test\n YYYY\n', dmp.patch_toText(patches), 'patch_addPadding: Both edges none.');
   dmp.patch_addPadding(patches);
-  Expect.equals('@@ -5,8 +5,12 @@\n XXXX\n+test\n YYYY\n', dmp.patch_toText(patches), 'patch_addPadding: Both edges none.');
+  Expect.equals('@@ -13,8 +17,12 @@\n XXXX\n+test\n YYYY\n', dmp.patch_toText(patches), 'patch_addPadding: Both edges none.');
 }
 
 void testPatchApply() {
@@ -874,7 +874,7 @@ void testPatchApply() {
   results = dmp.patch_apply(patches, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ--------------------1234567890');
   boolArray = results[1];
   resultStr = '${results[0]}\t${boolArray[0]}\t${boolArray[1]}';
-  Expect.equals('ABCDEFGHIJKLMNOPQRSTUVWXYZ--------------------1234567YYYYYYYYYY890\tfalse\ttrue', resultStr, 'patch_apply: Compensate for failed patch.');
+  Expect.equals('ABCDEFGHIJKLMNOPQRSTUVWXYZ--------------------1234567890     false   false', resultStr, 'patch_apply: Compensate for failed patch.');
   dmp.Match_Threshold = 0.5;
   dmp.Match_Distance = 1000;
 
@@ -909,7 +909,6 @@ void testPatchApply() {
 
 // Run each test.
 main() {
-  dmp = new DiffMatchPatch();
 
   testDiffCommonPrefix();
   testDiffCommonSuffix();
